@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 import os
 
 from app.db.database import get_db
-from app.crud.user import get_user_by_email
 from app.schemas.user import TokenData
 
 # Password hashing
@@ -41,6 +40,9 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
+    # Import moved inside function to avoid circular import
+    from app.crud.user import get_user_by_email
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
