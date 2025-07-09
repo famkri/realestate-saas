@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({ 
-  baseURL: import.meta.env.VITE_API_URL || "https://realestate-saas.onrender.com/"
+  fetch(`${import.meta.env.VITE_API_URL}/api/endpoint`)
 });
 
 // Add token to requests if available
