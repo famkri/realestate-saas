@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({ 
-  fetch(`${import.meta.env.VITE_API_URL}/api/endpoint`)
+  axios.get(`${import.meta.env.VITE_API_URL}/api/your-endpoint`)
 });
 
 // Add token to requests if available
