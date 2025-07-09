@@ -1,4 +1,3 @@
-cat > app/deps.py <<'EOF'
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -16,7 +15,7 @@ load_dotenv()
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "realestate")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "db")  # 'db' for docker, 'localhost' for local
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")  # 'db' for docker, 'localhost' for local
 
 DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
 
@@ -99,4 +98,3 @@ def get_current_active_user(current_user: User = Depends(get_current_user)):
 def init_db():
     """Initialize database tables"""
     Base.metadata.create_all(bind=engine)
-EOF
