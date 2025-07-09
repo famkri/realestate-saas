@@ -2,18 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build tools
-RUN pip install --upgrade pip
-RUN pip install "setuptools>=68.0.0,<70.0.0" "wheel>=0.41.0"
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and pyproject.toml
+# Copy requirements first for better caching
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-RUN pip install -r requirements.txt
-
-# Copy the rest of your code
+# Copy application code
 COPY . .
 
-# Set the default command (adjust as needed)
+# Expose port
+EXPOSE 8000
+
+# Run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
