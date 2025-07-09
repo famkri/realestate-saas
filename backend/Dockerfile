@@ -8,7 +8,6 @@ RUN pip install "setuptools>=68.0.0,<70.0.0" "wheel>=0.41.0"
 
 # Copy requirements and pyproject.toml
 COPY requirements.txt .
-COPY pyproject.toml .
 
 # Install dependencies
 RUN pip install -r requirements.txt
