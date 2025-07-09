@@ -12,12 +12,12 @@ from .models import Base, User
 load_dotenv()
 
 # Database configuration
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "realestate")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")  # 'db' for docker, 'localhost' for local
+POSTGRES_USER = os.getenv("POSTGRES_USER", "famkri")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "2RrBV4QxEcHUzQHg6l3H6UC9SobBr8dc")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "realestate_saas")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "dpg-d1n7d2uuk2gs739lvskg-a")  # 'db' for docker, 'localhost' for local
 
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
+DATABASE_URL = f"postgresql://famkri:2RrBV4QxEcHUzQHg6l3H6UC9SobBr8dc@dpg-d1n7d2uuk2gs739lvskg-a.oregon-postgres.render.com/realestate_saas"
 
 # Create engine with connection pooling
 engine = create_engine(
