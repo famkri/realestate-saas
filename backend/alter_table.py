@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, text
 import os
 
 # You can use the DATABASE_URL from your environment, or paste it directly here
-DATABASE_URL = os.getenv("DATABASE_URL", "PASTE_YOUR_DATABASE_URL_HERE")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://famkri:2RrBV4QxEcHUzQHg6l3H6UC9SobBr8dc@dpg-d1n7d2uuk2gs739lvskg-a.oregon-postgres.render.com/realestate_saas")
 
 # If your URL starts with postgres://, change it to postgresql://
 if DATABASE_URL.startswith("postgres://"):
