@@ -1,4 +1,3 @@
-cat > app/routers/auth.py <<'EOF'
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -10,6 +9,7 @@ from ..deps import (
     get_db, 
     authenticate_user, 
     get_password_hash,
+    get_current_active_user,
     SECRET_KEY, 
     ALGORITHM, 
     ACCESS_TOKEN_EXPIRE_MINUTES
@@ -97,4 +97,3 @@ async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user info"""
     return current_user
-EOF
