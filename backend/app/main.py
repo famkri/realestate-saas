@@ -1,21 +1,20 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from datetime import timedelta
-import os
+import uvicorn
 
-from app.database import get_db, init_db
-from app.models import User, Listing
-from app.schemas import UserCreate, UserResponse, Token, LoginRequest, ListingResponse
-from app.auth import (
-    authenticate_user, 
-    create_access_token, 
-    get_password_hash, 
-    get_current_user,
-    ACCESS_TOKEN_EXPIRE_MINUTES
-)
+from app.db.database import engine, get_db
+from app.models import user as user_models
+from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
+from app.crud.user import create_user, get_user_by_email, authenticate_user
+from app.auth.auth import create_access_token, get_current_user
+from app.dependencies import get_db
 
-app = FastAPI(title="Real Estate SaaS API", version="1.0.0")
+# Create database tables
+user_models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="Real Estate Scraper API", version="1.0.0")
 
 # CORS configuration
 app.add_middleware(
@@ -30,83 +29,54 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event("startup")
-async def startup_event():
-    try:
-        init_db()
-        print("✅ Database initialized successfully")
-        
-        # Create a default user if none exists
-        from app.database import SessionLocal
-        db = SessionLocal()
-        try:
-            existing_user = db.query(User).first()
-            if not existing_user:
-                default_user = User(
-                    username="admin",
-                    email="admin@example.com",
-                    hashed_password=get_password_hash("admin123")
-                )
-                db.add(default_user)
-                db.commit()
-                print("✅ Default user created: admin/admin123")
-        finally:
-            db.close()
-            
-    except Exception as e:
-        print(f"❌ Failed to initialize database: {e}")
+security = HTTPBearer()
 
 @app.get("/")
 async def root():
-    return {"message": "Real Estate SaaS API is running!"}
+    return {"message": "Real Estate Scraper API"}
 
-@app.post("/api/register", response_model=UserResponse)
+@app.post("/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     # Check if user already exists
-    db_user = db.query(User).filter(User.username == user.username).first()
+    db_user = get_user_by_email(db, email=user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered"
+        )
+  
     # Create new user
-    hashed_password = get_password_hash(user.password)
-    db_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=hashed_password
+    db_user = create_user(db=db, user=user)
+    return UserResponse(
+        id=db_user.id,
+        email=db_user.email,
+        is_active=db_user.is_active
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
 
-@app.post("/api/login", response_model=Token)
-async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    user = authenticate_user(db, login_data.username, login_data.password)
+@app.post("/login", response_model=Token)
+async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
+    user = authenticate_user(db, user_credentials.email, user_credentials.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+  
+    access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/api/me", response_model=UserResponse)
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+@app.get("/users/me", response_model=UserResponse)
+async def read_users_me(current_user: user_models.User = Depends(get_current_user)):
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        is_active=current_user.is_active
+    )
 
-@app.get("/api/listings", response_model=list[ListingResponse])
-async def get_listings(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    listings = db.query(Listing).limit(100).all()
-    return listings
+@app.get("/protected")
+async def protected_route(current_user: user_models.User = Depends(get_current_user)):
+    return {"message": f"Hello {current_user.email}, this is a protected route!"}
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
