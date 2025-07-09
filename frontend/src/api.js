@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// Create an axios instance with the base URL from your .env
+// Use the base URL directly from your .env
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + "/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Add token to requests if available
