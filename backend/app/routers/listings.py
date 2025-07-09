@@ -1,4 +1,3 @@
-cat > app/routers/listings.py <<'EOF'
 from fastapi import APIRouter, Depends, Query, HTTPException, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, desc
@@ -242,4 +241,3 @@ async def get_listing(
         raise HTTPException(status_code=404, detail="Listing not found")
     
     return listing.to_dict()
-EOF
