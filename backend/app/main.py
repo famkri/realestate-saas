@@ -1,4 +1,3 @@
-cat > app/main.py <<'EOF'
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -81,4 +80,3 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
-EOF
