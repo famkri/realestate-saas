@@ -37,16 +37,12 @@ numpy==1.25.2
 pydantic==2.5.0
 email-validator==2.1.0
 
-# CORS
-python-cors==1.0.1
-
 # Logging
 loguru==0.7.2
 
 # Testing (optional)
 pytest==7.4.3
 pytest-asyncio==0.21.1
-httpx==0.25.2
 
 # Development tools (optional)
 black==23.11.0
