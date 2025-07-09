@@ -37,21 +37,22 @@ async def root():
 
 @app.post("/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
-    # Check if user already exists
-    db_user = get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already registered"
+    try:
+        db_user = get_user_by_email(db, email=user.email)
+        if db_user:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already registered"
+            )
+        db_user = create_user(db=db, user=user)
+        return UserResponse(
+            id=db_user.id,
+            email=db_user.email,
+            is_active=db_user.is_active
         )
-  
-    # Create new user
-    db_user = create_user(db=db, user=user)
-    return UserResponse(
-        id=db_user.id,
-        email=db_user.email,
-        is_active=db_user.is_active
-    )
+    except Exception as e:
+        print(f"Register error: {e}")  # This will show up in Render logs
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/login", response_model=Token)
 async def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
