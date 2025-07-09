@@ -1,4 +1,3 @@
-cat > init_db.py <<'EOF'
 #!/usr/bin/env python3
 """
 Database initialization script
@@ -64,4 +63,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
