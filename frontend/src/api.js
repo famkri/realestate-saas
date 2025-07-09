@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const api = axios.create({ 
-  axios.get(`${import.meta.env.VITE_API_URL}/api/your-endpoint`)
+// Create an axios instance with the base URL from your .env
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL + "/api",
 });
 
 // Add token to requests if available
