@@ -1,4 +1,3 @@
-cat > app/celery_worker.py <<'EOF'
 import os
 import json
 import logging
@@ -175,4 +174,3 @@ def get_scraping_stats():
 
 if __name__ == "__main__":
     celery_app.start()
-EOF
