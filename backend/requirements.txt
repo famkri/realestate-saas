@@ -1,7 +1,7 @@
 # FastAPI and server
 setuptools==68.0.0,<70.0.0
 wheel==0.41.0
-fastapi==0.104.1
+fastapi==0.116.1
 uvicorn[standard]==0.24.0
 
 # Database
