@@ -27,7 +27,7 @@ httpx==0.25.2
 
 # Web scraping
 scrapy==2.11.0
-playwright==1.40.0
+playwright==1.53.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
 
